@@ -11,12 +11,6 @@ $utilisateur = [
     "Telephone" => "0488/42 42 42" 
 ];
 
-/*
-    Example : 
-    foreach ($array as $key => $value) {
-    echo "Key: $key => Value: $value\n";
-}
-*/
 ?>
 
 <!DOCTYPE html>
@@ -29,10 +23,16 @@ $utilisateur = [
 <body>
     <table>
         <thead>
-            <th scope='col'>Key</th>
-            <th scope='col'>Value</th>
+            <th>Key</th>
+            <th>Value</th>
         </thead>
         <tbody>
+            <?php foreach ($utilisateur as $key => $value) {
+                echo "<tr> 
+                        <td>".$key."</td> 
+                        <td>".$value."</td> 
+                    </tr>";
+            }?>
         </tbody>
     </table>
 </body>
