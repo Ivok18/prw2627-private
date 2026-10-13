@@ -7,5 +7,36 @@
 </head>
 <body>
     
+ <?php
+    // si valeur entrée..
+        // si valeur valide, affichage conversion
+        // si pas valide, retour au formulaire
+
+    // si rien..
+        // affichage formulaire
+
+    if(isset($_GET['val'])) {
+        $value = (float)$_GET['val'];
+        if(is_numeric($value)) {
+            $multiplier = 40.3399;
+            $conversion = $value * $multiplier; 
+            echo "<p>".$value." BEF = ".$conversion." EUR </p>";
+            echo "<p><a href='?'>Retour</a></p>";
+        } else {
+            echo "<a href='?'>Retour</a>";
+        }
+
+    } else {
+        ?>
+        <form method="GET" action=''>
+            <p>
+                Value :
+                <input type='number' name='val' required/>
+            </p>
+            <p><input type='submit'></p>
+        </form>
+        <?php
+    }
+ ?>
 </body>
 </html>
