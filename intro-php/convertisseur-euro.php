@@ -8,13 +8,6 @@
 <body>
     
  <?php
-    // si valeur entrée..
-        // si valeur valide, affichage conversion
-        // si pas valide, retour au formulaire
-
-    // si rien..
-        // affichage formulaire
-
     if(isset($_GET['val'])) {
         $value = (float)$_GET['val'];
         if(is_numeric($value)) {
