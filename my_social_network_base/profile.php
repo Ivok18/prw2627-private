@@ -1,25 +1,25 @@
 
 <?php
-    if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'input..
-        $pseudo = $_GET['pseudo'];  // si oui, on récupère dans une variable..
-        try { // on essaie de récupérer le pseudo contenu dans la variable en se connectant à la db..
-            $pdo = new PDO("mysql:host=localhost;dbname=my_social_network_base;charset=utf8mb4", "root", "root");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo"); // requête db
-            $query->execute(["pseudo" => $pseudo]);
-            $profile = $query->fetch(); // un seul résultat au maximum
-            if($query->rowCount()==0) { // si la requête retourne rien, pas de pseudo
-                die("Can't find user '$pseudo' in the database");
-            } else { // si la requête retourne on affiche les infos de la ligne du pseudo existant dans la db
-                $description = $profile['profile'];
-                $picture_path = $profile['picture_path'];
-            }
-        } catch (Exception $exc) { // si porblème dans la requête, message d'erreur
-            die("Error while accessing database. Please contact your administrator.");
+require_once "functions.php";
+
+if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'input..
+    $pseudo = $_GET['pseudo'];  // si oui, on récupère dans une variable..
+    try { // on essaie de récupérer le pseudo contenu dans la variable en se connectant à la db..
+        $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo"); // requête db
+        $query->execute(["pseudo" => $pseudo]);
+        $profile = $query->fetch(); // un seul résultat au maximum
+        if($query->rowCount()==0) { // si la requête retourne rien, pas de pseudo
+            die("Can't find user '$pseudo' in the database");
+        } else { // si la requête retourne on affiche les infos de la ligne du pseudo existant dans la db
+            $description = $profile['profile'];
+            $picture_path = $profile['picture_path'];
         }
-    } else { // si pas de pseudo entré en input, message d'erreur
-        die("This page expects a 'pseudo' parameter via the GET method");
+    } catch (Exception $exc) { // si porblème dans la requête, message d'erreur
+        die("Error while accessing database. Please contact your administrator.");
     }
+} else { // si pas de pseudo entré en input, message d'erreur
+    die("This page expects a 'pseudo' parameter via the GET method");
+}
 ?>
 <!DOCTYPE html>
 <html>

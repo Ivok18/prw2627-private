@@ -1,8 +1,7 @@
 <?php
-    try {
-        $pdo = new PDO("mysql:host=localhost;dbname=my_social_network_base;charset=utf8mb4", "root", "root");
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once "functions.php";
 
+    try {
         $query = $pdo->prepare("SELECT pseudo from Members");
         $query->execute();
         $members = $query->fetchAll();
@@ -33,7 +32,8 @@
             <ul>
             <?php 
                 foreach($members as $member) { 
-                    echo "<li>".$member['pseudo']."</li>";
+                    $pseudo = $member['pseudo'];
+                    echo "<li><a href='profile.php?pseudo=$pseudo'>$pseudo</li>";
                 }
             ?>
             </ul>
