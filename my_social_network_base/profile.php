@@ -3,6 +3,8 @@
 require_once "functions.php";
 
 if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'input..
+
+    // TODO : trim here
     $pseudo = $_GET['pseudo'];  // si oui, on récupère dans une variable..
     try { // on essaie de récupérer le pseudo contenu dans la variable en se connectant à la db..
         $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo"); // requête db
@@ -24,12 +26,15 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
 <!DOCTYPE html>
 <html>
     <head>
+        <!-- escape here -->
         <title><?= $pseudo ?> </title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="styles.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
+
+         <!-- escape here -->
         <div class="title"><?= $pseudo ?> Profile!</div>
         <div class="menu">
             <a href="profile.php">Home</a>
@@ -45,6 +50,7 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
                 if(mb_strlen($description ?? '') == 0) {
                     echo 'No profile string entered yet!';
                 } else {
+                    // TODO : escape here
                     echo $description;
                 }
             ?>
@@ -54,6 +60,7 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
                 if(mb_strlen($picture_path ?? '') == 0) {
                     echo "No picture loaded yet";
                 } else {
+                    // TODO escape here
                     echo "<img src=\"$picture_path\" width=\"100\" alt=\"$pseudo&apos;s picture\">";
                 }
                 ?>
