@@ -1,3 +1,6 @@
+<?php
+// ICI
+?>
 <!DOCTYPE html>
 <html>
     <head>

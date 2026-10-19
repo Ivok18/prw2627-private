@@ -4,8 +4,7 @@ require_once "functions.php";
 
 if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'input..
 
-    // TODO : trim here
-    $pseudo = $_GET['pseudo'];  // si oui, on récupère dans une variable..
+    $pseudo = trim($_GET['pseudo']);  // si oui, on récupère dans une variable..
     try { // on essaie de récupérer le pseudo contenu dans la variable en se connectant à la db..
         $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo"); // requête db
         $query->execute(["pseudo" => $pseudo]);
@@ -27,7 +26,7 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
 <html>
     <head>
         <!-- escape here -->
-        <title><?= $pseudo ?> </title>
+        <title><?= escape($pseudo)?> </title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="styles.css" rel="stylesheet" type="text/css"/>
@@ -35,7 +34,7 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
     <body>
 
          <!-- escape here -->
-        <div class="title"><?= $pseudo ?> Profile!</div>
+        <div class="title"><?= escape($pseudo) ?> Profile!</div>
         <div class="menu">
             <a href="profile.php">Home</a>
             <a href="members.php">Members</a>
@@ -47,21 +46,21 @@ if(isset($_GET['pseudo'])) { // on verifie si le pseudo a été entré dans l'in
         <div class="main">
             <div>
                 <?php
-                if(mb_strlen($description ?? '') == 0) {
+                if(mb_strlen(escape($description) ?? '') == 0) {
                     echo 'No profile string entered yet!';
                 } else {
-                    // TODO : escape here
-                    echo $description;
+                    echo escape($description);
                 }
             ?>
             </div>
             <div>
                 <?php 
-                if(mb_strlen($picture_path ?? '') == 0) {
+                if(mb_strlen(escape($picture_path) ?? '') == 0) {
                     echo "No picture loaded yet";
                 } else {
-                    // TODO escape here
-                    echo "<img src=\"$picture_path\" width=\"100\" alt=\"$pseudo&apos;s picture\">";
+                    $path_esc = escape($picture_path);
+                    $pseudo_esc = escape($pseudo);
+                    echo "<img src=\"$path_esc\" width=\"100\" alt=\"$pseudo&apos;s picture\">";
                 }
                 ?>
             </div>

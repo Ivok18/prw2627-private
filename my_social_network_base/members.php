@@ -33,9 +33,8 @@ require_once "functions.php";
             <?php 
                 foreach($members as $member) { 
                     $pseudo = $member['pseudo'];
-
-                    // TODO : escape here
-                    echo "<li><a href='profile.php?pseudo=$pseudo'>$pseudo</li>";
+                    $pseudo_esc = escape($pseudo);
+                    echo "<li><a href='profile.php?pseudo=$pseudo'>$pseudo_esc</li>";
                 }
             ?>
             </ul>

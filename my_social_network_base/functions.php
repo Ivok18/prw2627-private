@@ -14,3 +14,8 @@ try {
     // error during connexion
     die("Error while accessing database. Please contact your administrator.");
 }
+
+function escape(string $str) : string {
+    return htmlspecialchars((string)$str, ENT_QUOTES, "UTF-8");
+}
+?>
