@@ -18,4 +18,9 @@ try {
 function escape(string $str) : string {
     return htmlspecialchars((string)$str, ENT_QUOTES, "UTF-8");
 }
+
+function redirect(string $url, $statusCode = 303) {
+    header('Location: '. $url, true, $statusCode);
+    die();
+}
 ?>
