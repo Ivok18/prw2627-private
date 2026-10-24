@@ -1,6 +1,5 @@
 <?php
 require_once "functions.php";
-
 if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
     // both input entered
     $pseudo = trim($_POST['pseudo']);
@@ -17,7 +16,9 @@ if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
         if($profile['password'] != $password) {
             $errors[] = "Wrong password. Try again.";
         } else { // password correct
-            redirect("profile.php?pseudo=$pseudo");
+            session_regenerate_id(true);
+            $_SESSION['user'] = $pseudo;
+            redirect("profile.php");
         }
     }
 }

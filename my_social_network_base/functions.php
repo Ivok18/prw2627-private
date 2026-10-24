@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $dbhost = "localhost";
 $dbname = "my_social_network_base";
 $dbuser = "root";
@@ -22,5 +24,14 @@ function escape(string $str) : string {
 function redirect(string $url, $statusCode = 303) {
     header('Location: '. $url, true, $statusCode);
     die();
+}
+
+function check_login()
+{
+    global $user;
+    if (!isset($_SESSION['user']))
+        redirect('index.php');
+    else 
+        $user = $_SESSION['user'];
 }
 ?>
