@@ -1,7 +1,7 @@
 <?php
 require_once "functions.php";
 
-if(isset($_POST['pseudo']) && isset($_POST['password'])) {
+if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
     // both input entered
     $pseudo = trim($_POST['pseudo']);
     $password = trim($_POST['password']);
@@ -19,14 +19,6 @@ if(isset($_POST['pseudo']) && isset($_POST['password'])) {
         } else { // password correct
             redirect("profile.php?pseudo=$pseudo");
         }
-    }
-} else {
-    // one of them not entered
-    if(!isset($_POST['pseudo']) && isset($errors)) {
-        $errors[] = "Pseudo required.";
-    } 
-    if(!isset($_POST['password']) && isset($errors)) {
-        $errors[] = "Password required.";
     }
 }
 ?>
