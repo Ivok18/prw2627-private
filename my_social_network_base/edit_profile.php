@@ -1,3 +1,31 @@
+<?php
+require_once "functions.php";
+check_login();
+
+// we retrieve description + picture path from database
+$user = $_SESSION['user'];
+$query = $pdo->prepare("select * from members where pseudo = :pseudo");
+$query->execute(["pseudo" => $user]);
+$profile = $query->fetch();
+$description = trim($profile['profile']);
+$picture_path = trim($profile['picture_path']);
+$old_desc = $description;
+
+// we apply modifications if they were made
+if(isset($_POST['profile'])) {
+    try {
+        $description = trim($_POST['profile']);
+        $query = $pdo->prepare("update members set profile = :desc where pseudo = :pseudo");
+        $query->execute([
+            "desc" => $description,
+            "pseudo" => $user
+        ]);
+    } catch (Exception $e) {
+        $msg = "Error: ".$e;
+        $errors[] = $msg;
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,13 +47,18 @@
         <div class="main">
             <form method="post" action="edit_profile.php" enctype="multipart/form-data">
                 <h4>Enter or edit your details and/or upload an image.</h4>
-                <textarea name="profile" cols="50" rows="3"></textarea>
+                <textarea name="profile" cols="50" rows="3"><?= escape($description) ?></textarea>
 
                 Image: <input type="file" name="image" accept="image/x-png, image/gif, image/jpeg">
-                <img src="" width="100" alt="profile picture">
+                <img src=<?= escape($picture_path) ?> width="100" alt="profile picture">
 
                 <input type="submit" value="Save Profile">
             </form>
+            <?php 
+            if(!isset($errors) && $old_desc !== $description) {
+                echo "<div class = 'success'> Your profile have successfully been updated. </div>";
+            }
+            ?>
         </div>
     </body>
 </html>
