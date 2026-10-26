@@ -25,7 +25,7 @@ require_once "functions.php";
                 $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
                 $query->execute([
                     "pseudo" => $pseudo,
-                    "password" => ""
+                    "password" => password_hash("", PASSWORD_BCRYPT)
                 ]);
                 redirect("profile.php");
 
@@ -43,7 +43,7 @@ require_once "functions.php";
                     $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
                     $query->execute([
                     "pseudo" => $pseudo,
-                    "password" => $password
+                    "password" => password_hash($password, PASSWORD_BCRYPT)
                 ]);
                 redirect("profile.php");
 

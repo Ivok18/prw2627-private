@@ -1,31 +1,65 @@
 <?php
 require_once "functions.php";
+
 check_login();
 
-// we retrieve description + picture path from database
-$user = $_SESSION['user'];
-$query = $pdo->prepare("select * from members where pseudo = :pseudo");
-$query->execute(["pseudo" => $user]);
-$profile = $query->fetch();
-$description = trim($profile['profile']);
-$picture_path = trim($profile['picture_path']);
-$old_desc = $description;
+$profile = '';
+$picture_path = '';
 
-// we apply modifications if they were made
+try {
+    $query = $pdo->prepare("select profile, picture_path from members where pseudo = :pseudo");
+    $query->execute(["pseudo" => $user]);
+    $result = $query->fetch();
+    $profile = $result['profile'];
+    $picture_path = $result['picture_path'];
+} catch (Exception $ex) {
+    die ("Error while accessing database. Please contact administrator.");
+}
+
 if(isset($_POST['profile'])) {
+    $profile = trim($_POST['profile']);
     try {
-        $description = trim($_POST['profile']);
-        $query = $pdo->prepare("update members set profile = :desc where pseudo = :pseudo");
-        $query->execute([
-            "desc" => $description,
-            "pseudo" => $user
-        ]);
-    } catch (Exception $e) {
-        $msg = "Error: ".$e;
-        $errors[] = $msg;
+        $query = $pdo->prepare("update members set profile=:profile where pseudo=:pseudo");
+        $query->execute(["profile" => $profile, "pseudo" => $user]);
+        $success = "Your profile has been successfully updated.";
+    } catch (Exception $ex) {
+        die ("Error while accessing the database. Please contact your administrator");
+    }
+}
+
+if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
+    if($_FILES['image']['error']==0) {
+        // we validate image type before saving
+        $typeOk = TRUE;
+
+        if($_FILES['image']['type']=="image/gif")
+            $saveTo = $user.".gif";
+        else if($_FILES['image']['type']=="image/jpeg")
+            $saveTo = $user.".jpg";
+        else if($_FILES['image']['type']=="image/png")
+            $saveTo = $user."png";
+        else {
+            $typeOk = FALSE;
+            $error = "Unsupported image format: gif, jpeg or png!";
+        }
+
+        if($typeOk) {
+            move_uploaded_file($_FILES['image']['tmp_name'], $saveTo);
+            try {
+                $query = $pdo->prepare("update members set picture_path = :path where pseudo = :pseudo");
+                $query->execute(["path" => $saveTo, "pseudo" => $user]);
+                $success = "Your profile have been succesfully updated.";
+                $picture_path = $saveTo;
+            } catch (Exception $ex) {
+                die("Error while accessing the database. Please contact your adminostrator.");
+            }
+        }
+    } else {
+        $error = "Error while uploading file.";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,7 +81,7 @@ if(isset($_POST['profile'])) {
         <div class="main">
             <form method="post" action="edit_profile.php" enctype="multipart/form-data">
                 <h4>Enter or edit your details and/or upload an image.</h4>
-                <textarea name="profile" cols="50" rows="3"><?= escape($description) ?></textarea>
+                <textarea name="profile" cols="50" rows="3"><?= escape($profile) ?></textarea>
 
                 Image: <input type="file" name="image" accept="image/x-png, image/gif, image/jpeg">
                 <img src=<?= escape($picture_path) ?> width="100" alt="profile picture">
@@ -55,11 +89,12 @@ if(isset($_POST['profile'])) {
                 <input type="submit" value="Save Profile">
             </form>
             <?php 
-            if(!isset($errors) && $old_desc !== $description) {
-                echo "<div class = 'success'> Your profile have successfully been updated. </div>";
-            }
+            if(isset($success))
+                echo "<div class = 'success'> $success </div>";
+            if(isset($error)) 
+                  echo "<div class = 'error'> $error </div>";
+        
             ?>
         </div>
     </body>
 </html>
-

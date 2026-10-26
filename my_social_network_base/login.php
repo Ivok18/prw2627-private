@@ -13,7 +13,8 @@ if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
         $errors[] = "Can't find a member with the pseudo '".$pseudo."'. Please sign-up";
     } else {
         // password incorrect
-        if($profile['password'] != $password) {
+        $hash = $profile['password'];
+        if(!password_verify($password, $hash)) {
             $errors[] = "Wrong password. Try again.";
         } else { // password correct
             session_regenerate_id(true);
