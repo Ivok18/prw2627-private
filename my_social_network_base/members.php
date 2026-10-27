@@ -6,7 +6,7 @@ require_once "functions.php";
         $query->execute();
         $members = $query->fetchAll();
     } catch (Exception $exc) {
-        die('Error while accessing database. Please contact your administrator.');
+        abort('Error while accessing database. Please contact your administrator.');
     }
 ?>
 

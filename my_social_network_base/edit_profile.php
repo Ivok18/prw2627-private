@@ -13,7 +13,7 @@ try {
     $profile = $result['profile'];
     $picture_path = $result['picture_path'];
 } catch (Exception $ex) {
-    die ("Error while accessing database. Please contact administrator.");
+    abort ("Error while accessing database. Please contact administrator.");
 }
 
 if(isset($_POST['profile'])) {
@@ -23,7 +23,7 @@ if(isset($_POST['profile'])) {
         $query->execute(["profile" => $profile, "pseudo" => $user]);
         $success = "Your profile has been successfully updated.";
     } catch (Exception $ex) {
-        die ("Error while accessing the database. Please contact your administrator");
+        abort ("Error while accessing the database. Please contact your administrator");
     }
 }
 
@@ -51,7 +51,7 @@ if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
                 $success = "Your profile have been succesfully updated.";
                 $picture_path = $saveTo;
             } catch (Exception $ex) {
-                die("Error while accessing the database. Please contact your adminostrator.");
+                abort("Error while accessing the database. Please contact your adminostrator.");
             }
         }
     } else {

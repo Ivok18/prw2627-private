@@ -14,13 +14,13 @@ try { // on essaie de récupérer le pseudo contenu dans la variable en se conne
     $query->execute(["pseudo" => $pseudo]);
     $profile = $query->fetch(); // un seul résultat au maximum
     if($query->rowCount()==0) { // si la requête retourne rien, pas de pseudo
-        die("Can't find user '$pseudo' in the database");
+        abort("Can't find user '$pseudo' in the database");
     } else { // si la requête retourne on affiche les infos de la ligne du pseudo existant dans la db
         $description = $profile['profile'] ?? "";
         $picture_path = $profile['picture_path'] ?? "";
     }
 } catch (Exception $exc) { // si porblème dans la requête, message d'erreur
-    die("Error while accessing database. Please contact your administrator.");
+    abort("Error while accessing database. Please contact your administrator.");
 }
 ?>
 <!DOCTYPE html>

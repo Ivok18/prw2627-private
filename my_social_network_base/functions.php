@@ -14,7 +14,7 @@ try {
 
 } catch (Exception $e) {
     // error during connexion
-    die("Error while accessing database. Please contact your administrator.");
+    abort("Error while accessing database. Please contact your administrator.");
 }
 
 function escape(string $str) : string {
@@ -23,7 +23,7 @@ function escape(string $str) : string {
 
 function redirect(string $url, $statusCode = 303) {
     header('Location: '. $url, true, $statusCode);
-    die();
+    abort("");
 }
 
 function check_login()
@@ -33,5 +33,11 @@ function check_login()
         redirect('index.php');
     else 
         $user = $_SESSION['user'];
+}
+
+function abort(string $err) {
+    global $error;
+    $error = $err;
+    include 'error.php';
 }
 ?>

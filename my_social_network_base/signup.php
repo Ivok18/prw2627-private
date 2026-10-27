@@ -1,6 +1,5 @@
 <?php
 require_once "functions.php";
-    // ICI
     $pseudo = "";
     $password = "";
     $password_confirm = "";
