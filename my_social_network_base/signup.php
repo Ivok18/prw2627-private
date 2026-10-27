@@ -1,59 +1,60 @@
 <?php
 require_once "functions.php";
-    $pseudo = "";
-    $password = "";
-    $password_confirm = "";
-    if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
-        $pseudo = trim($_POST['pseudo']);
-        $query = $pdo->prepare("select * from Members where pseudo = :pseudo");
-        $query->execute(["pseudo" => $pseudo]);
-        $profile = $query->fetch();
-        if($query->rowCount() != 0){    // Pseudo already exist
-            $errors[] = "Pseudo ".$pseudo." already exists";
-        } else {   // Pseudo doesnt exist
-            if(mb_strlen($pseudo) < 3) { // Minimum length 3
-                $errors[] = "Pseudo minimum length is 3";
-            }
-            
-            if(empty($_POST['password']) && empty($_POST['confirm_password'])) {
+$pseudo = "";
+$password = "";
+$password_confirm = "";
 
-                // proceeds without password => sign-up
+if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
+    $pseudo = trim($_POST['pseudo']);
+    if(!is_pseudo_available($pseudo)){    // Pseudo already exist
+        $errors[] = "Pseudo ".$pseudo." already exists";
+    } else {   // Pseudo doesnt exist => can create
+        $is_too_short = mb_strlen($pseudo);
+        if($is_too_short) { // Minimum length 3
+            $errors[] = "Pseudo minimum length is 3";
+        }
+        
+        $is_signup_no_password = (empty($_POST['password']) && empty($_POST['confirm_password']));
+        if($is_signup_no_password) {
+            // proceeds without password => sign-up
+            // SIGN UP !!
+            session_regenerate_id(true);
+            $_SESSION['user'] = $pseudo;
+            $pdo = connect();
+            $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
+            $query->execute([
+                "pseudo" => $pseudo,
+                "password" => password_hash("", PASSWORD_BCRYPT)
+            ]);
+            redirect("profile.php");
+
+
+        } else { // Password verification
+            $password = trim($_POST['password']);
+            $password_confirm = trim($_POST['password_confirm']);
+            $passwords_match = $password === $password_confirm;
+
+            if($passwords_match) {
+                // both password same => sign-up
                 // SIGN UP !!
                 session_regenerate_id(true);
                 $_SESSION['user'] = $pseudo;
+                $pdo = connect();
                 $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
                 $query->execute([
-                    "pseudo" => $pseudo,
-                    "password" => password_hash("", PASSWORD_BCRYPT)
-                ]);
-                redirect("profile.php");
+                "pseudo" => $pseudo,
+                "password" => password_hash($password, PASSWORD_BCRYPT)
+            ]);
+            redirect("profile.php");
 
-
-            } else { // Password verification
-                $password = trim($_POST['password']);
-                $password_confirm = trim($_POST['password_confirm']);
-
-                if($password === $password_confirm) {
-
-                    // both password same => sign-up
-                    // SIGN UP !!
-                    session_regenerate_id(true);
-                    $_SESSION['user'] = $pseudo;
-                    $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
-                    $query->execute([
-                    "pseudo" => $pseudo,
-                    "password" => password_hash($password, PASSWORD_BCRYPT)
-                ]);
-                redirect("profile.php");
-
-                } else {
-                    // different
-                    $errors[] = "Two passwords do not match.";
-                } 
-            }
-        
+            } else {
+                // different
+                $errors[] = "Two passwords do not match.";
+            } 
         }
-    } 
+    
+    }
+} 
     
 ?>
 

@@ -1,20 +1,38 @@
 <?php
 session_start();
 
-$dbhost = "localhost";
-$dbname = "my_social_network_base";
-$dbuser = "root";
-$dbpassword = "root";
 
 
-try {
-    // connexion to database
-    $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4",$dbuser, $dbpassword);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+function connect() : PDO {
+    $dbhost = "localhost";
+    $dbname = "my_social_network_base";
+    $dbuser = "root";
+    $dbpassword = "root";
+    $pdo = null;
+    try {
+        // connexion to database
+        $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4",$dbuser, $dbpassword);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-} catch (Exception $e) {
-    // error during connexion
-    abort("Error while accessing database. Please contact your administrator.");
+    } catch (Exception $e) {
+        // error during connexion
+        abort("Error while accessing database. Please contact your administrator.");
+    }
+
+    return $pdo;
+}
+
+
+function is_pseudo_available($pseudo) {
+    $pdo = connect();
+    try{
+        $query = $pdo->prepare("select * from members where pseudo = :pseudo");
+        $query->execute(["pseudo" => $pseudo]);
+        $result = $query->fetchAll();
+        return count($result) === 0;
+    } catch (Exception $e) {
+        abort("Error while connecting to the database. Please contact your administrator.");
+    }
 }
 
 function escape(string $str) : string {

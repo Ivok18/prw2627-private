@@ -1,13 +1,14 @@
 <?php
 require_once "functions.php";
-
-    try {
-        $query = $pdo->prepare("SELECT pseudo from Members");
-        $query->execute();
-        $members = $query->fetchAll();
-    } catch (Exception $exc) {
-        abort('Error while accessing database. Please contact your administrator.');
-    }
+check_login();
+try {
+    $pdo = connect();
+    $query = $pdo->prepare("SELECT pseudo from Members");
+    $query->execute();
+    $members = $query->fetchAll();
+} catch (Exception $exc) {
+    abort('Error while accessing database. Please contact your administrator.');
+}
 ?>
 
 <!DOCTYPE html>
