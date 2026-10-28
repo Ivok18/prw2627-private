@@ -6,49 +6,30 @@ $password_confirm = "";
 
 if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
     $pseudo = trim($_POST['pseudo']);
-    if(!is_pseudo_available($pseudo)){    // Pseudo already exist
+    if(!is_pseudo_available($pseudo)){    
         $errors[] = "Pseudo ".$pseudo." already exists";
-    } else {   // Pseudo doesnt exist => can create
+    } else {  
         $is_too_short = mb_strlen($pseudo);
-        if($is_too_short) { // Minimum length 3
+        if($is_too_short) { 
             $errors[] = "Pseudo minimum length is 3";
         }
         
         $is_signup_no_password = (empty($_POST['password']) && empty($_POST['confirm_password']));
         if($is_signup_no_password) {
-            // proceeds without password => sign-up
-            // SIGN UP !!
             session_regenerate_id(true);
             $_SESSION['user'] = $pseudo;
-            $pdo = connect();
-            $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
-            $query->execute([
-                "pseudo" => $pseudo,
-                "password" => password_hash("", PASSWORD_BCRYPT)
-            ]);
+            insert_member($pseudo, "");
             redirect("profile.php");
-
-
-        } else { // Password verification
+        } else {
             $password = trim($_POST['password']);
             $password_confirm = trim($_POST['password_confirm']);
             $passwords_match = $password === $password_confirm;
-
             if($passwords_match) {
-                // both password same => sign-up
-                // SIGN UP !!
                 session_regenerate_id(true);
                 $_SESSION['user'] = $pseudo;
-                $pdo = connect();
-                $query = $pdo->prepare("insert into members(pseudo, password) values (:pseudo, :password)"); 
-                $query->execute([
-                "pseudo" => $pseudo,
-                "password" => password_hash($password, PASSWORD_BCRYPT)
-            ]);
-            redirect("profile.php");
-
+                insert_member($pseudo, $password);
+                redirect("profile.php");
             } else {
-                // different
                 $errors[] = "Two passwords do not match.";
             } 
         }

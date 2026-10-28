@@ -6,15 +6,15 @@ if(isset($_POST['pseudo']) && !empty($_POST['pseudo'])) {
     $password = trim($_POST['password']);
 
     // we try to find pseudo in database
-    $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo");
-    $query->execute(["pseudo" => $pseudo]);
-    $profile = $query->fetch();
-    if($query->rowCount() == 0) {
+    if(is_pseudo_available($pseudo)) {
         $errors[] = "Can't find a member with the pseudo '".$pseudo."'. Please sign-up";
     } else {
-        // password incorrect
+        $pdo = connect();
+        $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo");
+        $query->execute(["pseudo" => $pseudo]);
+        $profile = $query->fetch();
         $hash = $profile['password'];
-        if(!password_verify($password, $hash)) {
+        if(!password_verify($password, $hash)) {   // password incorrect
             $errors[] = "Wrong password. Try again.";
         } else { // password correct
             session_regenerate_id(true);

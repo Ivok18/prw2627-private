@@ -3,21 +3,10 @@
 require_once "functions.php";
 
 check_login();
+$member = get_member($user);
+$description = $member['profile'] ?? "";
+$picture_path = $member['picture_path'] ?? "";
 
-try { // on essaie de récupérer le pseudo contenu dans la variable en se connectant à la db..
-    $pdo = connect();
-    $query = $pdo->prepare("SELECT * from Members where pseudo = :pseudo"); // requête db
-    $query->execute(["pseudo" => $user]);
-    $profile = $query->fetch(); // un seul résultat au maximum
-    if($query->rowCount()==0) { // si la requête retourne rien, pas de pseudo
-        abort("Can't find user '$user' in the database");
-    } else { // si la requête retourne on affiche les infos de la ligne du pseudo existant dans la db
-        $description = $profile['profile'] ?? "";
-        $picture_path = $profile['picture_path'] ?? "";
-    }
-} catch (Exception $exc) { // si porblème dans la requête, message d'erreur
-    abort("Error while accessing database. Please contact your administrator.");
-}
 ?>
 <!DOCTYPE html>
 <html>
@@ -32,14 +21,7 @@ try { // on essaie de récupérer le pseudo contenu dans la variable en se conne
 
          <!-- escape here -->
         <div class="title"><?= escape($user) ?> Profile!</div>
-        <div class="menu">
-            <a href="profile.php">Home</a>
-            <a href="members.php">Members</a>
-            <a href="friends.php">Friends</a>
-            <a href="messages.php">Messages</a>
-            <a href="edit_profile.php">Edit Profile</a>
-            <a href="logout.php">Log Out</a>
-        </div>
+        <?php include_menu() ?>
         <div class="main">
             <div>
                 <?php

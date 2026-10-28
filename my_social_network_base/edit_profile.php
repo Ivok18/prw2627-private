@@ -5,25 +5,19 @@ check_login();
 
 $profile = '';
 $picture_path = '';
-
-try {
-    $query = $pdo->prepare("select profile, picture_path from members where pseudo = :pseudo");
-    $query->execute(["pseudo" => $user]);
-    $result = $query->fetch();
-    $profile = $result['profile'];
-    $picture_path = $result['picture_path'];
-} catch (Exception $ex) {
-    abort ("Error while accessing database. Please contact administrator.");
-}
+$member = get_member($user);
+$description = $member['profile'] ?? "";
+$picture_path = $member['picture_path'] ?? "";
 
 if(isset($_POST['profile'])) {
-    $profile = trim($_POST['profile']);
+    $description = trim($_POST['profile']);
+    $pdo = connect();
     try {
         $query = $pdo->prepare("update members set profile=:profile where pseudo=:pseudo");
-        $query->execute(["profile" => $profile, "pseudo" => $user]);
+        $query->execute(["profile" => $description, "pseudo" => $user]);
         $success = "Your profile has been successfully updated.";
     } catch (Exception $ex) {
-        abort ("Error while accessing the database. Please contact your administrator");
+        abort("Error while accessing the database. Please contact your administrator");
     }
 }
 
@@ -37,7 +31,7 @@ if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
         else if($_FILES['image']['type']=="image/jpeg")
             $saveTo = $user.".jpg";
         else if($_FILES['image']['type']=="image/png")
-            $saveTo = $user."png";
+            $saveTo = $user.".png";
         else {
             $typeOk = FALSE;
             $error = "Unsupported image format: gif, jpeg or png!";
@@ -46,6 +40,7 @@ if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
         if($typeOk) {
             move_uploaded_file($_FILES['image']['tmp_name'], $saveTo);
             try {
+                $pdo = connect();
                 $query = $pdo->prepare("update members set picture_path = :path where pseudo = :pseudo");
                 $query->execute(["path" => $saveTo, "pseudo" => $user]);
                 $success = "Your profile have been succesfully updated.";
@@ -70,18 +65,11 @@ if(isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
     </head>
     <body>
         <div class="title">Update Your Profile</div>
-        <div class="menu">
-            <a href="profile.php">Home</a>
-            <a href="members.php">Members</a>
-            <a href="friends.php">Friends</a>
-            <a href="messages.php">Messages</a>
-            <a href="edit_profile.php">Edit Profile</a>
-            <a href="logout.php">Log Out</a>
-        </div>
+        <?php include_menu() ?>
         <div class="main">
             <form method="post" action="edit_profile.php" enctype="multipart/form-data">
                 <h4>Enter or edit your details and/or upload an image.</h4>
-                <textarea name="profile" cols="50" rows="3"><?= escape($profile) ?></textarea>
+                <textarea name="profile" cols="50" rows="3"><?= escape($description) ?></textarea>
 
                 Image: <input type="file" name="image" accept="image/x-png, image/gif, image/jpeg">
                 <img src=<?= escape($picture_path) ?> width="100" alt="profile picture">

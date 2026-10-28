@@ -1,3 +1,8 @@
+<?php 
+include "functions.php";
+check_login();
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,14 +13,7 @@
     </head>
     <body>
         <div class="title">Your Friends</div>
-        <div class="menu">
-            <a href="profile.php">Home</a>
-            <a href="members.php">Members</a>
-            <a href="friends.php">Friends</a>
-            <a href="messages.php">Messages</a>
-            <a href="edit_profile.php">Edit Profile</a>
-            <a href="logout.php">Log Out</a>
-        </div>
+        <?php include_menu(); ?>
         <div class="main">
 
         </div>

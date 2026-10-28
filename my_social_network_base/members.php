@@ -1,14 +1,7 @@
 <?php
 require_once "functions.php";
 check_login();
-try {
-    $pdo = connect();
-    $query = $pdo->prepare("SELECT pseudo from Members");
-    $query->execute();
-    $members = $query->fetchAll();
-} catch (Exception $exc) {
-    abort('Error while accessing database. Please contact your administrator.');
-}
+$members = get_members();
 ?>
 
 <!DOCTYPE html>
@@ -21,14 +14,7 @@ try {
     </head>
     <body>
         <div class="title">Members</div>
-        <div class="menu">
-            <a href="profile.php">Home</a>
-            <a href="members.php">Members</a>
-            <a href="friends.php">Friends</a>
-            <a href="messages.php">Messages</a>
-            <a href="edit_profile.php">Edit Profile</a>
-            <a href="logout.php">Log Out</a>
-        </div>
+        <?php include_menu() ?>
         <div class="main">
             <ul>
             <?php 
