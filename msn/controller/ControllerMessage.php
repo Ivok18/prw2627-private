@@ -66,7 +66,8 @@ class ControllerMessage extends Controller {
         // 1] on verifie si l'identifiant est invalide, manquant ou si pas le droit de supprimer 
         //.. si un des 3 => exception
         //.. sinon on supprime le message de la db et on reaffiche la page messages du destinataire du message
-        $user = $this->get_user_id_or_redirect();
+        $pseudo = $this->get_user_id_or_redirect();
+        $user = Member::get_member_by_pseudo($pseudo);
         $post_id = filter_var($_POST["id_message"] ?? "", FILTER_VALIDATE_INT);
         if ($post_id === false) {
             Tools::abort("Wrong/missing param or action no permitted");
